@@ -1,3 +1,6 @@
+:- initialization(bc), initialization(inicio).
+%Comando para generar el .exe
+%swipl.exe -o executable.exe -c consultas.pl --goal=inicio
 bc :- consult('bconocimientos.pl').
 %N :- Nombre del elemento
 %C :- Símbolo del elemento
@@ -5,10 +8,10 @@ bc :- consult('bconocimientos.pl').
 inicio :-
 nl,
 write('---Menu---'), nl,
-write('1. Mostrar Base de conocimientpo'), nl,
-write('2. Agregar nuevo hecho'), nl,
-write('3. Eliminar hecho'), nl,
-write('4. Buscar hecho'), nl,
+write('1. Mostrar Base de conocimiento'), nl,
+write('2. Agregar nuevo elemento'), nl,
+write('3. Eliminar elemento'), nl,
+write('4. Buscar elemento'), nl,
 write('5. Modificar'), nl,
 write('6. Salir'), nl,
 write('Ingrese una opcion (1-6): '), nl,
@@ -48,7 +51,7 @@ eliminar(N) :- \+elemento(N,_), write('No se puede eliminar porque el elemento n
 eliminar(N) :- \+elemento(_,N), write('No se puede eliminar porque el elemento no se encuentra...'), nl.
 
 %Buscar
-buscar :- write("Escriba el elemento o simbolo a buscar: "), read(N), buscar(N,_).
+buscar :- write("Escriba el elemento o simbolo a buscar: "), nl, read(N), buscar(N,_).
     %En caso de encontrar el elemento
 buscar(N,C) :- elemento(N,C), write('Elemento encontrado'), nl, write(N), write(' su simbolo es: '), write(C), nl; elemento(C,N), write('Valor encontrado'), nl, write(N), write(' su simbolo es: '), write(C), nl.
     %En caso de no encontrar el elemento
