@@ -53,6 +53,7 @@ buscar(X,[_|T]) :- buscar(X,T).
 longitud([], 0).
 longitud([_|T], L) :- longitud(T,L1), L is L1 + 1.
 
+
 %length([1,2,3],X).
 %member(1,[1,2,3]).
 %is_list([1,2,3]).
