@@ -17,18 +17,22 @@ animales(carnivoro,
     [lobo,leopardo,leon]
 ).
 
-animales(insertivoro,
+animales(insectivoro,
     [rana,camaleon]
 ).
 
 %Listas y elementos
 platillos(
-    [pozole,pozolillo,menudo],tamales,[chile_relleno,chile_nogada],barbacoa
+    [pozole,pozolillo,menudo],
+    tamales,
+    [chile_relleno,chile_nogada],
+    barbacoa
 ).
 
 %Vectores
 vector(
-    [1,2,3],[x,y,z]
+    [1,2,3],
+    [x,y,z]
 ).
 
 
@@ -36,14 +40,18 @@ vector(
 %Operaciones
 %Comprobar
 lista([]).
-lista([H|T]) :- lista(T).
+lista([_|T]) :- lista(T).
 
 %buscar
-buscar(H,[H|_]).
-buscar(X,[_|T]) :- lista([X|_]), buscar(X,[_|X]). 
+% buscar(H,[H|_]).
+% buscar(X,[_|T]) :- lista([X|_]), buscar(X,[_|X]). 
+
+buscar(H,[H|_]) :- write('El elemento si se encuentra en la lista'), nl.
+buscar(X,[_|T]) :- buscar(X,T). 
 
 %longitud
-
+longitud([], 0).
+longitud([_|T], L) :- longitud(T,L1), L is L1 + 1.
 
 %length([1,2,3],X).
 %member(1,[1,2,3]).
