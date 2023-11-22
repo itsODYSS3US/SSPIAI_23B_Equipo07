@@ -10,16 +10,21 @@
     (m ((f 3)))
 ))
 
+
+
+
+
+
 (defun crear-grafo ()
   (let ((grafo '()))
     (format t "Creando un nuevo grafo.~% Ingrese los vértices y sus conexiones con pesos.~% Ingrese 'fin' para terminar.~%")
     (loop
-      (format t "Ingrese el nombre del vértice (o 'fin' para terminar): ")
+      (format t "Ingrese el nombre del vertice (o 'fin' para terminar): ")
       (let ((vertice (read-line)))
         (if (equal vertice "fin")
             (return (reverse grafo))
             (progn
-              (format t "Ingrese las conexiones y pesos en el formato '(vértice peso)' separados por espacios (o 'fin' para terminar): ")
+              (format t "Ingrese las conexiones y pesos en el formato '(vertice peso)': ")
               (let ((conexiones (parsear-conexiones (read-line))))
                 (push (list vertice conexiones) grafo))))))))
 
@@ -78,7 +83,18 @@
 
 ;((E (D 2) NIL) (D (E 2) NIL) (M (F 3) NIL) (I (A 3) NIL) (F (M 3) NIL) (A (I 3) NIL) (I (D 4) NIL) (F (E 4) NIL) (E (F 4) NIL) (D (I 4) NIL) (C (B 4) NIL) (B (C 4) NIL) (B (A 4) NIL) (A (B 4) NIL) (E (B 5) NIL) (D (A 5) NIL) (B (E 5) NIL) (A (D 5) NIL))
 
-(defun krusk ()
+(defun krusk (grafo)
+    ; (setq grafo (crear-grafo))
+    ;Genera las aristas y elimina el valor nil
+    (setq aristas (listaRes grafo))
+    (setq aristasn (quitarnil aristas))
+    ;Ordenar, dar formato y quitar valor nil
+    (setq aris-sort (lista-ordenada aristasn))
+    (setq aris-sortn (quitarnil aris-sort))
+    (kruskal aris-sortn)
+  )
+
+(defun krusk1 ()
     (setq grafo (crear-grafo))
     ;Genera las aristas y elimina el valor nil
     (setq aristas (listaRes grafo))
@@ -86,59 +102,89 @@
     ;Ordenar, dar formato y quitar valor nil
     (setq aris-sort (lista-ordenada aristasn))
     (setq aris-sortn (quitarnil aris-sort))
+    (kruskal aris-sortn)
   )
 
-;(M (F 3))
-;jala a medias xd
-(defun encontrar (x padre)
-  "Encuentra el conjunto al que pertenece el nodo X."
-  (if (eq x (car padre))
+; (setf grafo1 '((E (D 2)) (D (E 2)) (M (F 3)) (I (A 3)) (F (M 3)) (A (I 3)) (I (D 4)) (F (E 4)) (E (F 4)) (D (I 4)) (C (B 4)) (B (C 4)) (B (A 4)) (A (B 4)) (E (B 5)) (D (A 5)) (B (E 5)) (A (D 5))))
+
+
+
+;; Definición de las funciones auxiliares para el algoritmo de Kruskal
+
+;; Función para encontrar el representante de un conjunto usando uni-encontrar
+(defun encontrar (x parent)
+  (if (equal x (cdr (assoc x parent)))
       x
-      (encontrar (car padre) padre)))
+      (encontrar (cdr (assoc x parent)) parent)))
 
-(defun uni (x y padre)
-  "Une dos conjuntos x e y."
-  (let ((raizX (encontrar x padre))
-        (raizY (encontrar y padre)))
-    (setf (car (member raizX padre)) raizY)))
+;; Función para unir dos conjuntos disjuntos
+(defun uni (x y parent)
+  (let ((x-root (encontrar x parent))
+        (y-root (encontrar y parent)))
+    (setf (cdr (assoc x-root parent)) y-root)))
 
-(defun kruskal (edges)
-  "Algoritmo de Kruskal para encontrar un árbol de expansión mínima."
-  (let* ((sorted-edges (sort edges #'< :key #'caddr))
-        (resultado '())
-        (padre (make-hash-table :test #'equal)))
-    (dolist (edge sorted-edges)
-      (let ((u (first edge))
-            (v (second edge))
-            (peso (third edge)))
-        (unless (and (gethash u padre)
-                    (gethash v padre)
-                    (equal (gethash u padre) (gethash v padre)))
-          (push edge resultado)
-          (setf (gethash u padre) u)
-          (setf (gethash v padre) u))))
-    resultado))
+; (defun bubble-sort (lst)
+;   (let ((n (length lst)))
+;     (loop for i from 0 below (- n 1)
+;           do (loop for j from 0 below (- n i 1)
+;                    when (> (caddr (nth j lst)) (caddr (nth (+ j 1) lst)))
+;                    do (rotatef (nth j lst) (nth (+ j 1) lst))))
+;     lst))
 
-(setq ordenado '((E D 2) (D E 2) (M F 3) (I A 3) (F M 3) (A I 3) (I D 4) (F E 4)
-                (E F 4) (D I 4) (C B 4) (B C 4) (B A 4) (A B 4) (E B 5) (D A 5)
-                (B E 5) (A D 5)))
+;; Función principal para Kruskal
+(defun kruskal (graph)
+  (let ((parent '()))
 
-(setq resultado (kruskal ordenado))
+    ;; Inicializar cada vértice como su propio conjunto
+    (dolist (node graph)
+      (push (cons (car node) (car node)) parent))
 
-(format t "Árbol de expansión mínima (Kruskal):~%")
-(dolist (edge resultado)
-  (format t "~a -> ~a (~a)~%" (first edge) (second edge) (third edge)))
+    ;; Inicializar la variable MINIMUM-SPANNING-TREE como una lista vacía
+    (let ((MINIMUM-SPANNING-TREE '()))
+      ;; Iterar sobre los nodos del grafo
+      (dolist (node graph)
+        (let ((node-name (car node))
+              (connections (cdr node)))
+          ;; Iterar sobre las conexiones del nodo
+          (dolist (connection connections)
+            (let ((neighbor (car connection))
+                  (weight (cdr connection)))
+              ;; Obtener los nodos raíz de los conjuntos de los nodos de la conexión
+              (let ((start-node (encontrar node-name parent))
+                    (end-node (encontrar neighbor parent)))
+                ;; Si los nodos no están en el mismo conjunto, agregar esta arista al árbol
+                (if (not (equal start-node end-node))
+                    (progn
+                      (push (list node-name neighbor weight) MINIMUM-SPANNING-TREE) ;; Agregar resultado a MINIMUM-SPANNING-TREE
+                      ;; Unir los conjuntos de los nodos conectados por esta arista
+                      (uni start-node end-node parent))))))))
+                      MINIMUM-SPANNING-TREE
+                      )
+
+      ;; Devolver el árbol de expansión mínimo como lista de aristas
+      )) ;; Devolver MINIMUM-SPANNING-TREE como resultado
+
+(defun imprimir-arbol-expansion-minima (graph)
+  (let ((tree (krusk graph)))
+    (format t "Arbol de expansion minima: ~a~%" tree))) ;; Imprimir MINIMUM-SPANNING-TREE
 
 
-; kruskal ordenado
-; ((D A 5) (E B 5) (B A 4) (C B 4) (F E 4) (I D 4) (I A 3) (M F 3) (E D 2))
-; ((B A 4) (C B 4) (F E 4) (I D 4) (I A 3) (M F 3) (E D 2))
+(defun mostrar-menu ()
+  (format t "~%Menu:")
+  (format t "~%1. Ejecutar kruskal con grafo predefinido")
+  (format t "~%2. Crear grafo y ejecutar kruskal")
+  (format t "~%0. Salir del menu")
+  (format t "~%Ingrese el numero de la opcion deseada: "))
 
+(defun ejecutar-opcion (opcion)
+  (cond ((= opcion 1) (imprimir-arbol-expansion-minima vconocido2))
+        ((= opcion 2) (imprimir-arbol-expansion-minima (krusk1)))
+        ((= opcion 0) (format t "~%Saliendo del menu. Hasta luego!~%"))
+        (t (format t "~%Opcion no valida. Por favor, seleccione una opción valida."))))
 
-
-
-
-
-
-
-
+(defun inicio ()
+  (loop
+    (mostrar-menu)
+    (let ((opcion (parse-integer (read-line nil))))
+      (ejecutar-opcion opcion)
+      (when (= opcion 0) (return)))))
