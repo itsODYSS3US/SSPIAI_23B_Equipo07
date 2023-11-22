@@ -10,18 +10,13 @@
     (m ((f 3)))
 ))
 
-
-
-
-
-
 (defun crear-grafo ()
   (let ((grafo '()))
-    (format t "Creando un nuevo grafo.~% Ingrese los vértices y sus conexiones con pesos.~% Ingrese 'fin' para terminar.~%")
+    (format t "Creando un nuevo grafo.~% Ingrese los vertices y sus conexiones con pesos.~% Ingrese 'fin' para terminar.~%")
     (loop
       (format t "Ingrese el nombre del vertice (o 'fin' para terminar): ")
-      (let ((vertice (read-line)))
-        (if (equal vertice "fin")
+      (let ((vertice (read)))
+        (if (equal vertice 'fin)
             (return (reverse grafo))
             (progn
               (format t "Ingrese las conexiones y pesos en el formato '(vertice peso)': ")
@@ -123,13 +118,7 @@
         (y-root (encontrar y parent)))
     (setf (cdr (assoc x-root parent)) y-root)))
 
-; (defun bubble-sort (lst)
-;   (let ((n (length lst)))
-;     (loop for i from 0 below (- n 1)
-;           do (loop for j from 0 below (- n i 1)
-;                    when (> (caddr (nth j lst)) (caddr (nth (+ j 1) lst)))
-;                    do (rotatef (nth j lst) (nth (+ j 1) lst))))
-;     lst))
+
 
 ;; Función principal para Kruskal
 (defun kruskal (graph)
@@ -180,7 +169,7 @@
   (cond ((= opcion 1) (imprimir-arbol-expansion-minima vconocido2))
         ((= opcion 2) (imprimir-arbol-expansion-minima (krusk1)))
         ((= opcion 0) (format t "~%Saliendo del menu. Hasta luego!~%"))
-        (t (format t "~%Opcion no valida. Por favor, seleccione una opción valida."))))
+        (t (format t "~%Opcion no valida. Por favor, seleccione una opcion valida."))))
 
 (defun inicio ()
   (loop
